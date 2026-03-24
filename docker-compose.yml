@@ -1,0 +1,19 @@
+#server_project
+#handle: _MUMINUL__ISLAM___
+
+#code
+version: "3.9"
+
+services:
+
+    backend:
+        build: ./backend
+        container_name: back
+        ports:
+            - "8000:8000"
+    
+    frontend:
+        build: ./frontend
+        container_name: front
+        ports:
+            - "3000:80"
