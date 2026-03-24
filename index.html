@@ -1,0 +1,178 @@
+<!--Server Project-->
+<!--Handle: _MUMINUL__ISLAM___-->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+
+
+            body {
+                width: 100%;
+                height: auto;
+                background-color: rgb(255, 255, 255);
+
+                font-family: Arial, Helvetica, sans-serif;
+
+            }
+            .top{
+                width: 80%;
+                height: auto;
+                margin-left: 10%;
+                margin-right: 10%;
+                padding: 1%;
+                box-sizing: border-box;
+
+                background-color: rgb(174, 216, 253);
+                text-align: center;
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: medium;
+
+            }
+            #search-box{
+                width: 30%;
+                padding: 1%;
+                border: 0px;
+
+                font-size:large;
+            }
+
+
+            .frame {
+                width: 80%;
+                height: auto;
+                margin-left: 10%;
+                margin-right: 10%;
+                margin-top: 5%;
+
+                background-color: bisque;
+            }
+
+            table{
+                width: 100%;
+                height: auto;
+                padding: 2%;
+                
+            }
+            tr{
+                width: 100%;
+                height: auto;
+                
+                text-align: center;
+            }
+            tr:hover{
+                color: aliceblue;
+                background-color:rgb(20, 117, 101);
+            }
+            th,td{
+                width: auto;
+                height: auto;
+                padding: 1%;
+            }
+
+        </style>
+
+
+    </head>
+
+    <body>
+        <div class="top">
+            <p>Data Loading From Server</p>
+            <form>
+                <input id="search-box" type="text" name="search" value="Search & Add to Table">
+            </form>
+            <table id="search-table">
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Order ID</th>
+                    <th>Order Price</th>
+                </tr>
+            </table>
+        </div>
+
+
+        <div class="frame">
+            <table id="all-data-table">
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Order ID</th>
+                    <th>Order Price</th>
+                </tr>
+            </table>
+        </div>
+
+        
+        <script>
+
+            function create_row(table,customerID,orderID,orderPrice){
+
+                const container=document.getElementById(table);
+                const newRow=document.createElement("tr");
+
+                row_Data=`  
+                    <td>Person_${customerID}</td>
+                    <td>Order_${orderID}</td>
+                    <td>${orderPrice}</td>
+                `
+                newRow.innerHTML=row_Data;
+                container.appendChild(newRow)
+            }
+
+            async function getData(){
+                try{
+                    //let response=await fetch("http://127.0.0.1:8000"); 
+                    let response=await fetch("http://10.185.100.136:8000/")
+                    let data=await response.json();
+
+                    console.log(data)
+
+                    for(let i=0;i<5;i++){
+                        create_row("all-data-table",data[i].customerID,data[i].orderID,data[i].orderPrice);
+                    }
+                }
+                catch(error){
+                    alert("error getting data    "+error);
+                }
+            }
+            getData();
+
+            function readyData(){
+
+                let search_term;
+
+                const search_box=document.getElementById("search-box");
+                search_box.addEventListener("keydown",function(event_object) {
+                    if(event_object.key=="Enter"){
+                        event_object.preventDefault();
+                        search_term=event_object.target.value;
+
+                        function search_function(search_term_in){
+                            let encodedURL=encodeURIComponent(search_term_in);
+                            //let url_fixed=`http://127.0.1:8000/search?search_term=${encodedURL}`; 
+                            let url_fixed=`http://10.185.100.136:8000/search?search_term=${encodedURL}`;
+                            return url_fixed;
+                        }
+                        let url=search_function(search_term);
+ 
+                        async function searchData(url){
+                            try{
+                                let response=await fetch(url);
+                                let data=await response.json();
+                                create_row("search-table",data.customerID,data.orderID,data.orderPrice);
+                                console.log(data);
+                            }
+                            catch(error){
+                                alert("error in search");
+                            }                
+                        }
+                        searchData(url);
+                    }
+                });
+            }
+            readyData();
+            //front_port=window.location.port;
+            //front_host=window.location.host;
+            //console.log("Front End Host : & Port:  ",front_host,front_port);
+        </script>
+    </body>
+</html>
